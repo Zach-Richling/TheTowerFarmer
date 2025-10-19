@@ -115,8 +115,8 @@ internal class GameAutomation
         var subRoutines = new List<Task>
         {
             GatherGems(token),
-            GatherMovingGems(token),
-            _upgradeManager.RunAsync(token),
+            GatherMovingGems(token)
+            //_upgradeManager.RunAsync(token)
         };
 
         await Task.WhenAll(subRoutines);

@@ -8,6 +8,12 @@ namespace TheTowerFarmer;
 
 internal class Vision
 {
+    private TesseractEngine _ocrEngine = new TesseractEngine("", "eng", EngineMode.LstmOnly);
+    public Vision()
+    {
+        _ocrEngine.SetVariable("tessedit_char_whitelist", "0123456789.$/%abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    }
+
     public Point? FindTemplate(Mat source, string templatePath, double threshold = 0.8, bool center = true)
     {
         using var template = Cv2.ImRead(templatePath, ImreadModes.Color);
@@ -112,9 +118,6 @@ internal class Vision
             }
         } 
 
-        using var ocr = new TesseractEngine("", "eng", EngineMode.LstmOnly);
-        ocr.SetVariable("tessedit_char_whitelist", "0123456789.$/%abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-
         foreach (var box in boxes)
         {
             using var roiGray = box.CvtColor(ColorConversionCodes.BGR2GRAY);
@@ -135,21 +138,21 @@ internal class Vision
             using var rightHalf = new Mat(roiGray, new Rect(midX, 0, roiGray.Width - midX, roiGray.Height));
 
 
-            #pragma warning disable CA1416 // TODO: Only available on windows
+#pragma warning disable CA1416
             using var leftPix = PixConverter.ToPix(leftHalf.ToBitmap());
             using var rightPix = PixConverter.ToPix(rightHalf.ToBitmap());
-            #pragma warning restore CA1416
+#pragma warning restore CA1416
 
             var name = "";
             var value = "";
 
-            using (var page = ocr.Process(leftPix, PageSegMode.SingleColumn))
+            using (var page = _ocrEngine.Process(leftPix, PageSegMode.SingleColumn))
             {
                 var text = page.GetText().Trim();
                 name = text;
             }
 
-            using (var page = ocr.Process(rightPix, PageSegMode.SingleBlock))
+            using (var page = _ocrEngine.Process(rightPix, PageSegMode.SingleBlock))
             {
                 var text = page.GetText().Trim();
                 value = text;
