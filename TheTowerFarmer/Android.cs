@@ -19,19 +19,33 @@ namespace TheTowerFarmer
                     FileName = "adb",
                     Arguments = "devices",
                     RedirectStandardOutput = true,
-                    UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
 
             process.Start();
-            var output = await process.StandardOutput.ReadToEndAsync();
+            var output = await process.StandardOutput.ReadToEndAsync(token);
             await process.WaitForExitAsync(token);
 
             return output.Split('\n')
                 .Where(line => line.Contains("device") && !line.Contains("List"))
                 .Select(line => line.Split('\t')[0].Trim())
                 .ToList();
+        }
+
+        public static async Task StopAsync(CancellationToken token)
+        {
+            using var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "adb",
+                    Arguments = "kill-server",
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(token);
         }
 
         public async Task<Mat> CaptureScreenAsync(CancellationToken token)
@@ -44,7 +58,6 @@ namespace TheTowerFarmer
                     FileName = "adb",
                     Arguments = args,
                     RedirectStandardOutput = true,
-                    UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };

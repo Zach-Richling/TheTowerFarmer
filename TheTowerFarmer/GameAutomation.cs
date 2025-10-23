@@ -26,7 +26,7 @@ internal class GameAutomation
 
         _logger = new LoggerConfiguration()
         .Enrich.WithProperty("DeviceSerial", deviceSerial)
-        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{DeviceSerial}] {SourceContext} {Message:lj}{NewLine}{Exception}")
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{DeviceSerial}] {Message:lj}{NewLine}{Exception}")
         .CreateLogger();
 
         _client = new Android(deviceSerial);
@@ -64,9 +64,9 @@ internal class GameAutomation
 
                 _frameProducer.Publish(frame);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.Error("Error in GameAutomation", ex);
+                _logger.Error("Error in GameAutomation. Is the emulator still running?");
             }
 
             await Task.Delay(200, token);
@@ -135,7 +135,7 @@ internal class GameAutomation
         catch (TaskCanceledException) { }
         catch (Exception ex) 
         {
-            _logger.Error("Error in GatherGems", ex);
+            _logger.Error(ex, "Error in GatherGems");
         }
     }
 
@@ -160,7 +160,7 @@ internal class GameAutomation
             }
         }
         catch (TaskCanceledException) { }
-        catch (Exception ex) { _logger.Error("Error in GatherMovingGems", ex); }
+        catch (Exception ex) { _logger.Error(ex, "Error in GatherMovingGems"); }
     }
 
     private async Task<bool> FindAndClick(Mat frame, string template, CancellationToken token, string? successMessage = null, string? failureMessage = null, double threshhold = 0.8)
