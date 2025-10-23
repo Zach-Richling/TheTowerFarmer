@@ -1,5 +1,6 @@
 # TheTowerFarmer
-A small C# program to automate various functions in [The Tower - Idle Tower Defense](https://play.google.com/store/apps/details?id=com.TechTreeGames.TheTower).
+A small C# program to automate various functions in [The Tower - Idle Tower Defense](https://play.google.com/store/apps/details?id=com.TechTreeGames.TheTower).<br>
+Runs on .NET 9 with [OpenCvSharp](https://github.com/shimat/opencvsharp) and [Tesseract](https://github.com/charlesw/tesseract).
 
 ## Things it does:
  - Keeps the game in battle
@@ -13,3 +14,7 @@ A small C# program to automate various functions in [The Tower - Idle Tower Defe
  - Claiming moving gems has only been tested with the default background. Others may disrupt this function.
  -  Make sure adb.exe is in the path for your PC or in the same directory as TheTowerFarmer.exe.
  -  The game must be on 1600 x 900 resolution.
+
+## Further Development
+ - Automatic upgrades?
+ - Change cards at certain waves?
