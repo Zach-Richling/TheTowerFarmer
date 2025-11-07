@@ -16,6 +16,7 @@ internal class Vision
 
     public Point? FindTemplate(Mat source, string templatePath, double threshold = 0.8, bool center = true)
     {
+        var temp = File.Exists(templatePath);
         using var template = Cv2.ImRead(templatePath, ImreadModes.Color);
         using var result = new Mat();
 
@@ -35,9 +36,15 @@ internal class Vision
         return new Point(maxLoc.X, maxLoc.Y);
     }
 
-    public Point? DetectGemByColor(Mat frame, Point center, int orbitRadius)
+    public Point? DetectGemByColor(Mat frame)
     {
-        var cropRect = new Rect(center.X - orbitRadius, center.Y - orbitRadius, orbitRadius * 2, orbitRadius * 2);
+        var tower = FindTemplate(frame, Templates.Battle.Tower);
+
+        if (tower == null)
+            return null;
+
+        var orbitRadius = 270;
+        var cropRect = new Rect(tower.Value.X - orbitRadius, tower.Value.Y - orbitRadius, orbitRadius * 2, orbitRadius * 2);
         using var cropped = new Mat(frame, cropRect);
 
         using var hsv = cropped.CvtColor(ColorConversionCodes.BGR2HSV);
@@ -62,8 +69,8 @@ internal class Vision
             var rect = Cv2.BoundingRect(contour);
             var gemCenter = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
 
-            double dx = gemCenter.X - center.X;
-            double dy = gemCenter.Y - center.Y;
+            double dx = gemCenter.X - tower.Value.X;
+            double dy = gemCenter.Y - tower.Value.Y;
 
             double dist = Math.Sqrt(dx * dx + dy * dy);
             var orbitError = Math.Abs(dist - orbitRadius);

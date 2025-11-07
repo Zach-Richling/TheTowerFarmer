@@ -17,15 +17,21 @@ internal class Program
 
             if (devices.Count == 0)
             {
-                logger.Warning("No emulator detected. Restarting ADB server and trying again...");
-                await Android.StopAsync(tokenSource.Token);
-                devices = await Android.GetDevicesAsync(tokenSource.Token);
+                var attempts = 0;
 
-                if (devices.Count == 0)
+                while (devices.Count == 0) 
                 {
-                    logger.Error("No emulator detected. Make sure the emulator supports ADB and it is enabled.");
-                    Console.ReadLine();
-                    return;
+                    logger.Warning("No emulator detected. Restarting ADB server and trying again...");
+                    await Android.StopAsync(tokenSource.Token);
+
+                    devices = await Android.GetDevicesAsync(tokenSource.Token);
+                    attempts++;
+
+                    if (attempts == 3)
+                    {
+                        logger.Error("No emulator detected. Make sure the emulator supports ADB and it is enabled.");
+                        return;
+                    }
                 }
             }
 
@@ -35,6 +41,10 @@ internal class Program
         catch (Exception e) 
         {
             logger.Fatal(e, "Error during startup");
+        } 
+        finally
+        {
+            Console.ReadLine();
         }
     }
 }

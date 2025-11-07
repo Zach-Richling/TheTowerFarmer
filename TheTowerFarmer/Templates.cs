@@ -19,7 +19,7 @@ internal static class Templates
         public const string DefenseUpgrade = "Templates\\defense_upgrade.png";
         public const string UtilityUpgrade = "Templates\\utility_upgrade.png";
         public const string Gems = "Templates\\gems.png";
-        public const string Tower = "Templates\\leaf_tower.png";
+        public const string Tower = "Templates\\tower.png";
     }
 
     internal static class Defeat

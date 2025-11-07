@@ -116,7 +116,6 @@ internal class GameAutomation
         {
             GatherGems(token),
             GatherMovingGems(token)
-            //_upgradeManager.RunAsync(token)
         };
 
         await Task.WhenAll(subRoutines);
@@ -146,16 +145,11 @@ internal class GameAutomation
             while (!token.IsCancellationRequested)
             {
                 var frame = await _frameProducer.WaitAsync(token);
-
-                var tower = _vision.FindTemplate(frame, Templates.Battle.Tower);
-                if (tower != null)
+                var point = _vision.DetectGemByColor(frame);
+                if (point != null)
                 {
-                    var point = _vision.DetectGemByColor(frame, (Point)tower, 270);
-                    if (point != null)
-                    {
-                        _logger.Information("Claimed moving gem");
-                        await _client.TapAsync(point.Value.X, point.Value.Y, token);
-                    }
+                    _logger.Information("Claimed moving gem");
+                    await _client.TapAsync(point.Value.X, point.Value.Y, token);
                 }
             }
         }
